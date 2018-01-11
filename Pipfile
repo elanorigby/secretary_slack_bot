@@ -7,6 +7,9 @@ verify_ssl = true
 
 "google-api-python-client" = "*"
 "httplib2" = "*"
+requests = "*"
+slackeventsapi = "*"
+slackclient = "*"
 
 
 [dev-packages]
