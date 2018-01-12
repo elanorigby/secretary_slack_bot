@@ -30,10 +30,10 @@ def handle_message(event_data):
 def reaction_added(event_data):
     event = event_data["event"]
     emoji = event["reaction"]
-    print(emoji)
+ #   print(emoji)
     channel = event["item"]["channel"]
     text = ":{}:".format(emoji)
-    print(text)
+#    print(text)
     CLIENT.api_call("chat.postMessage", channel=channel, text=text)
 
 
