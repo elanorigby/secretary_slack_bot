@@ -18,12 +18,23 @@ CLIENT = SlackClient(SLACK_BOT_TOKEN)
 # write to file
 
 @slack_events_adapter.on("message")
-def store_this(event_data):
+def take_notes(event_data):
     event = event_data["event"]
     if event.get('subtype') is None:
-        print("Subtype is none")
-        return True
+        message = event.get('text')
+        user = event["user"]
+        channel = event["channel"]
+        timestamp = event.get('ts')
+        
+        file_name = "{}_{}notes.txt".format(user, channel)
+        content = "{} - {}".format(timestamp, message)
+        print(file_name)
+        print(content)
+        with open(file_name, 'a+') as file:
+            file.write(content)
 
+        reply = "It has been writen :memo:"
+        CLIENT.api_call("chat.postMessage", channel=channel, text=reply)
 
 @slack_events_adapter.on("message")
 def affirm_notetaking(event_data):
@@ -36,12 +47,13 @@ def affirm_notetaking(event_data):
             print(channel)
             reply = "Ok, <@{}>! I will begin taking notes :memo:".format(message["user"])
             # print(reply)
+
             CLIENT.api_call("chat.postMessage", channel=channel, text=reply)
 
-# IF if message.get('subtype') is None 
+# # IF if message.get('subtype') is None 
 #@slack_events_adapter.on("message")
 #def store_notes(event_data):
-#    message = event_data["event"]
+#    event = event_data["event"]
 #    file_name = "{}_{}.txt".format(message["user"], message["channel"])
 #    message_text = message.get('text')
 #    print(message_text)
@@ -49,7 +61,7 @@ def affirm_notetaking(event_data):
 #    print(timestamp)
 #    with open(file_name, 'a+') as file:
 #        file.write(message_text, timestamp)
-#
+
 
 # Example reaction emoji echo
 @slack_events_adapter.on("reaction_added")
