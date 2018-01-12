@@ -1,5 +1,6 @@
 from slackeventsapi import SlackEventAdapter
 from slackclient import SlackClient
+import json
 import os
 
 # Our app's Slack Event Adapter for receiving actions via the Events API
@@ -11,18 +12,25 @@ SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 CLIENT = SlackClient(SLACK_BOT_TOKEN)
 
 
-# Example responder to greetings
 @slack_events_adapter.on("message")
-def handle_message(event_data):
+def affirm_notetaking(event_data):
     message = event_data["event"]
     message_text = message.get('text')
     print(message_text)
     if message.get('subtype') is None and "take notes" in message_text:
         channel = message["channel"]
         print(channel)
-        reply = "Ok, <@{}>! I will begin taking notes. :memo:".format(message["user"])
+        reply = "Ok, <@{}>! I will begin taking notes :memo:".format(message["user"])
         # print(reply)
         CLIENT.api_call("chat.postMessage", channel=channel, text=reply)
+
+
+@slack_events_adapter.on("message")
+def store_notes(event_data):
+    message = event_data["event"]
+    file_name = "{}_{}.txt".format(message["user"], message["channel"])
+    with open(file_name, 'a+') as file:
+        file.write(message.get('text'))
 
 
 # Example reaction emoji echo
