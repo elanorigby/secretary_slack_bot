@@ -20,14 +20,16 @@ def take_notes(event_data):
         user = event["user"]
         channel = event["channel"]
         timestamp = event.get('ts')
-        file_name = "{}_{}notes.txt".format(user, channel)
-        content = "[{} - {}]\n".format(timestamp, message)
+        file_name = "./notes/{}_{}.json".format(user, channel)
+        content = {}
+        content[timestamp] = message
+        json_content = json.dumps(content)
         print(file_name)
         print(content)
         with open(file_name, 'a+') as file:
-            file.write(content)
-        reply = "It has been writen :memo:"
-        CLIENT.api_call("chat.postMessage", channel=channel, text=reply)
+            file.write(json_content)
+        # reply = "It has been writen :memo:"
+        # CLIENT.api_call("chat.postMessage", channel=channel, text=reply)
 
 
 # Once we have our event listeners configured, we can start the
